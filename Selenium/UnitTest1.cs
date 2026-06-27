@@ -26,11 +26,26 @@ namespace Selenium
         {
             return driverType switch
             {
-                DriverType.Chrome => new ChromeDriver(),
+                DriverType.Chrome => CreateChromeDriver(),
                 DriverType.Firefox => new FirefoxDriver(),
                 DriverType.Edge => new EdgeDriver(),
-                _ => new ChromeDriver(),
+                _ => CreateChromeDriver(),
             };
+        }
+
+        private IWebDriver CreateChromeDriver()
+        {
+            var options = new ChromeOptions();
+
+            if (OperatingSystem.IsLinux())
+            {
+                options.AddArgument("--headless=new");
+                options.AddArgument("--no-sandbox");
+                options.AddArgument("--disable-dev-shm-usage");
+                options.AddArgument("--window-size=1920,1080");
+            }
+
+            return new ChromeDriver(options);
         }
 
         [OneTimeSetUp]
@@ -67,30 +82,15 @@ namespace Selenium
         [TearDown]
         public void TearDown()
         {
-            var status = TestContext.CurrentContext.Result.Outcome.Status;
-
-            switch (status)
+            try
             {
-                case NUnit.Framework.Interfaces.TestStatus.Passed:
-                    _extentTest.Pass("Test passed");
-                    break;
-
-                case NUnit.Framework.Interfaces.TestStatus.Failed:
-                    _extentTest.Fail(TestContext.CurrentContext.Result.Message);
-                    _extentTest.Fail(TestContext.CurrentContext.Result.StackTrace);
-                    break;
-
-                case NUnit.Framework.Interfaces.TestStatus.Skipped:
-                    _extentTest.Skip("Test skipped");
-                    break;
+                _driver?.Quit();
+                _driver?.Dispose();
             }
-
-            _extentTest.Info("Browser quit");
-
-            _driver?.Quit();
-            _driver?.Dispose();
-
-            _report.Flush();
+            finally
+            {
+                _report?.Flush();
+            }
         }
 
 
