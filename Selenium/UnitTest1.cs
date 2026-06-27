@@ -98,6 +98,8 @@ namespace Selenium
         [TestCaseSource(typeof(LoginTestData), nameof(LoginTestData.LoginCases))]
         public void Login(string username, string password, bool shouldLogin)
         {
+            if (username == null || password == null)
+                Assert.Fail("Json file path is wrong!");
 
 
             //Arrange

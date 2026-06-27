@@ -3,7 +3,7 @@ using OpenQA.Selenium.Support.UI;
 
 namespace Selenium.Pages
 {
-    public class LoginPage(IWebDriver _driver, WebDriverWait _wait) // Primary constructor
+    public class LoginPage(IWebDriver _driver, WebDriverWait _wait)
     {
 
         public IWebElement LoginButton => _driver.FindElement(By.XPath("//a[@href='/login']"));
