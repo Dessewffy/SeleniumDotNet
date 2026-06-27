@@ -361,3 +361,9 @@ MigrationBackup/
 
 # Fody - auto-generated XML schema
 FodyWeavers.xsd
+
+# Test credentials
+**/ValidData.json
+
+# Test reports
+TestReport.html

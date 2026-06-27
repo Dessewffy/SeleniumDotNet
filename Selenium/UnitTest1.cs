@@ -1,7 +1,7 @@
+using System.Runtime.InteropServices;
 using AventStack.ExtentReports;
 using AventStack.ExtentReports.Reporter;
 using FluentAssertions;
-using Microsoft.VisualStudio.TestPlatform.ObjectModel;
 using OpenQA.Selenium;
 using OpenQA.Selenium.Chrome;
 using OpenQA.Selenium.Edge;
@@ -9,32 +9,19 @@ using OpenQA.Selenium.Firefox;
 using OpenQA.Selenium.Support.UI;
 using Selenium.Driver;
 using Selenium.Pages;
+using Selenium.TestData;
 
 namespace Selenium
 {
-    //[TestFixture("Zaramoth@gmail.hu", "Dessewffy1842@")] // You can add adata for the whole class
     public class Tests
     {
+
         private IWebDriver _driver;
         private WebDriverWait _wait;
-        private LoginPage _loginPage;
-        private string _username;
-        private string _password;
-        private bool _loggedIn;
+        private LoginPage? _loginPage;
         private DriverType _driverType;
-
         private ExtentReports _report = new ExtentReports();
         private ExtentTest _extentTest;
-
-        /*
-        public Tests(string userName, string password, bool loggedIn)
-        {
-            _username = userName;
-            _password = password;
-            _loggedIn = loggedIn;
-        }
-        */
-
         public IWebDriver GetDriver(DriverType driverType)
         {
             return driverType switch
@@ -72,9 +59,9 @@ namespace Selenium
 
         private void SetupExtentReports()
         {
-            _report.AddSystemInfo("OS", "Windows 10");
+            _report.AddSystemInfo("OS", RuntimeInformation.OSDescription);
             _report.AddSystemInfo("Browser", _driverType.ToString());
-            _extentTest = _report.CreateTest("Login").Log(Status.Info, "report initialized");
+            _extentTest = _report.CreateTest(TestContext.CurrentContext.Test.Name);
 
         }
         [TearDown]
@@ -106,13 +93,13 @@ namespace Selenium
             _report.Flush();
         }
 
-        [Test]
-        [TestCase("Zaramoth@gmail.hu", "Dessewffy1842@", true)] // Multiple test cases
-        [TestCase("rosszfel@hasznalo.hu", "Dessewffy1842@", false)]
-        [TestCase("Zaramoth@gmail.hu", "rosszjelszo", false)]
-        [Category("Smoke")] //You can add tags
+
+        [Category("Smoke")]
+        [TestCaseSource(typeof(LoginTestData), nameof(LoginTestData.LoginCases))]
         public void Login(string username, string password, bool shouldLogin)
         {
+
+
             //Arrange
             _loginPage = new LoginPage(_driver, _wait);
 
@@ -134,13 +121,13 @@ namespace Selenium
         }
 
 
-        [Test]
-        [TestCase("Zaramoth@gmail.hu", "Dessewffy1842@", true)] // Multiple test cases
-        [TestCase("rosszfel@hasznalo.hu", "Dessewffy1842@", false)]
-        [TestCase("Zaramoth@gmail.hu", "rosszjelszo", false)]
-        [Category("Fluent")] //You can add tags
+        [Category("Fluent")]
+        [TestCaseSource(typeof(LoginTestData), nameof(LoginTestData.LoginCases))]
         public void LoginUseFluentAssertion(string username, string password, bool shouldLogin)
         {
+            if (username == null || password == null)
+                Assert.Fail("Json file path is wrong!");
+
             //Arrange
             _loginPage = new LoginPage(_driver, _wait);
 
@@ -160,5 +147,8 @@ namespace Selenium
                 _extentTest.Log(Status.Info, "Error message appeared");
             }
         }
+
+
     }
+
 }

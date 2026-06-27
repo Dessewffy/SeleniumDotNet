@@ -5,13 +5,7 @@ namespace Selenium.Pages
 {
     public class LoginPage(IWebDriver _driver, WebDriverWait _wait) // Primary constructor
     {
-        /*
-        private IWebDriver _driver;
-        public LoginPage(IWebDriver driver)
-        {
-            _driver = driver;
-        }
-        */
+
         public IWebElement LoginButton => _driver.FindElement(By.XPath("//a[@href='/login']"));
         public IWebElement EmailInput => _driver.FindElement(By.Id("email"));
         public IWebElement PasswordInput => _driver.FindElement(By.Id("password"));
